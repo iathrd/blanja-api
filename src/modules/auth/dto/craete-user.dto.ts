@@ -10,11 +10,6 @@ export default class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   @Length(4, 20)
-  username: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @Length(4, 20)
   @IsEmail()
   email: string;
 
