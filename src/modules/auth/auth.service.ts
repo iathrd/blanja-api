@@ -52,7 +52,7 @@ export class AuthService {
       throw new ConflictException('email or password is incorrect.');
     }
 
-    const payload = { sub: user.id, email: user.email, secret: 'secret' };
+    const payload = { sub: user.id };
     const access_token = await this.jwtService.signAsync(payload);
 
     return {

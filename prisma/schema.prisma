@@ -18,6 +18,17 @@ model User {
   email     String   @unique
   name      String?
   password  String
+  details  UserDetails?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserDetails {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  image     String?
+  phoneNumber String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
