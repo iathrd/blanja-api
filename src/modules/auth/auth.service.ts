@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   InternalServerErrorException,
@@ -7,12 +8,16 @@ import { PrismaService } from '../prisma/prisma.service';
 import { Prisma } from '@prisma/client';
 import * as argon2 from 'argon2';
 import { JwtService } from '@nestjs/jwt';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import IUser from './interfaces/user.interface';
+import UpdateUserDto from './dto/update-user.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prismaServis: PrismaService,
     private jwtService: JwtService,
+    private cloudinaryService: CloudinaryService,
   ) {}
 
   async signup(createUserDto: Prisma.UserCreateInput) {
@@ -58,5 +63,43 @@ export class AuthService {
     return {
       access_token,
     };
+  }
+  async updateUserDetail(
+    user: IUser,
+    file: Express.Multer.File,
+    updateUserDto: UpdateUserDto,
+  ) {
+    try {
+      if (!file) {
+        return await this.prismaServis.userDetails.upsert({
+          where: { userId: user.sub },
+          update: {
+            phoneNumber: updateUserDto.phoneNumber,
+          },
+          create: {
+            phoneNumber: updateUserDto.phoneNumber,
+            userId: user.sub,
+          },
+        });
+      }
+      const image = await this.cloudinaryService.uploadImage(file).catch(() => {
+        throw new BadRequestException('Invalid file type.');
+      });
+
+      return await this.prismaServis.userDetails.upsert({
+        where: { userId: user.sub },
+        create: {
+          phoneNumber: updateUserDto.phoneNumber,
+          userId: user.sub,
+          image: image.url,
+        },
+        update: {
+          phoneNumber: updateUserDto.phoneNumber,
+          image: image.url,
+        },
+      });
+    } catch {
+      throw new InternalServerErrorException();
+    }
   }
 }
