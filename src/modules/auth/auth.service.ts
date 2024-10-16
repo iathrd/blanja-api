@@ -11,6 +11,8 @@ import { JwtService } from '@nestjs/jwt';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import IUser from './interfaces/user.interface';
 import UpdateUserDto from './dto/update-user.dto';
+import { SendgridService } from '../sendgrid/sendgrid.service';
+import SendEmailDto from 'src/common/dto/send-emai.dto';
 
 @Injectable()
 export class AuthService {
@@ -18,6 +20,7 @@ export class AuthService {
     private readonly prismaServis: PrismaService,
     private jwtService: JwtService,
     private cloudinaryService: CloudinaryService,
+    private sendgridService: SendgridService,
   ) {}
 
   async signup(createUserDto: Prisma.UserCreateInput) {
@@ -57,7 +60,7 @@ export class AuthService {
       throw new ConflictException('email or password is incorrect.');
     }
 
-    const payload = { sub: user.id };
+    const payload = { sub: user.id, email: user.email };
     const access_token = await this.jwtService.signAsync(payload);
 
     return {
@@ -113,5 +116,9 @@ export class AuthService {
         details: true,
       },
     });
+  }
+
+  async sendEmail(sendEmailDto: SendEmailDto) {
+    return this.sendgridService.sendEmail(sendEmailDto);
   }
 }

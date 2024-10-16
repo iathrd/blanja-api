@@ -17,6 +17,7 @@ import { User } from 'src/common/decorators/user.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import IUser from './interfaces/user.interface';
 import UpdateUserDto from './dto/update-user.dto';
+import SendEmailDto from 'src/common/dto/send-emai.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -52,5 +53,10 @@ export class AuthController {
   @Get('user-details')
   async getUserDetails(@User() user: IUser) {
     return this.authService.getUserDetails(user);
+  }
+
+  @Post('send-email')
+  async sendEmail(@Body() sendEmailDto: SendEmailDto) {
+    return this.authService.sendEmail(sendEmailDto);
   }
 }
