@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpStatus,
   ParseFilePipeBuilder,
   Post,
@@ -45,5 +46,11 @@ export class AuthController {
     @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.authService.updateUserDetail(user, file, updateUserDto);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('user-details')
+  async getUserDetails(@User() user: IUser) {
+    return this.authService.getUserDetails(user);
   }
 }

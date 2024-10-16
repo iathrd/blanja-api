@@ -102,4 +102,16 @@ export class AuthService {
       throw new InternalServerErrorException();
     }
   }
+
+  async getUserDetails(user: IUser) {
+    return await this.prismaServis.user.findUnique({
+      where: { id: user.sub },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        details: true,
+      },
+    });
+  }
 }
