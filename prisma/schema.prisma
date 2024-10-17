@@ -19,6 +19,7 @@ model User {
   name      String?
   password  String
   details  UserDetails?
+  shippingAddress ShippingAddress[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -33,4 +34,18 @@ model UserDetails {
   updatedAt DateTime @updatedAt
 }
 
+model ShippingAddress {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  saveAs    String
+  receiverName String
+  receiverPhoneNumber String
+  address   String
+  postalCode String
+  city      String
+  primaryAddress Boolean
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
