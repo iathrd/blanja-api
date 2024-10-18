@@ -11,4 +11,10 @@ export class ShippingAddressRepository {
       data: createRepositoryDto,
     });
   }
+
+  async findOne(id: string) {
+    return this.prismaService.shippingAddress.findUnique({
+      where: { id },
+    });
+  }
 }

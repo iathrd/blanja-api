@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import ShippingAddressDto from './dto/shipping-address.dto';
 import { ShippingAddressRepository } from './shipping-address.repository';
 
@@ -13,6 +17,23 @@ export class ShippingAddressService {
       const shippingAddress = await this.shippingAddressRepository.create(
         createShippingAddress,
       );
+      return shippingAddress;
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async getShippingAddress(id: string) {
+    try {
+      const shippingAddress = await this.shippingAddressRepository.findOne(id);
+
+      if (!shippingAddress) {
+        return new NotFoundException(
+          'Shipping address not found',
+        ).getResponse();
+      }
+
       return shippingAddress;
     } catch (error) {
       console.log(error);
