@@ -3,6 +3,7 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { JwtService } from '@nestjs/jwt';
@@ -21,7 +22,10 @@ export class AuthService {
     private jwtService: JwtService,
     private cloudinaryService: CloudinaryService,
     private sendgridService: SendgridService,
+    private readonly logger: Logger,
   ) {}
+
+  SERVICE: string = AuthService.name;
 
   async signup(createUserDto: Prisma.UserCreateInput) {
     try {
@@ -33,6 +37,8 @@ export class AuthService {
 
       return user;
     } catch (error) {
+      this.logger.error(error.message, error.stack, this.SERVICE);
+
       // Catch Prisma unique constraint violation error
       if (error.code === 'P2002') {
         throw new ConflictException('Email already exists.');
@@ -44,27 +50,32 @@ export class AuthService {
   }
 
   async signin(userDto: Prisma.UserCreateInput) {
-    const user = await this.userRepository.findOneByEmail(userDto.email);
+    try {
+      const user = await this.userRepository.findOneByEmail(userDto.email);
 
-    if (!user) {
-      throw new ConflictException('Email does not exist.');
+      if (!user) {
+        throw new ConflictException('Email does not exist.');
+      }
+
+      const isPasswordValid = await argon2.verify(
+        user.password,
+        userDto.password,
+      );
+
+      if (!isPasswordValid) {
+        throw new ConflictException('email or password is incorrect.');
+      }
+
+      const payload = { sub: user.id, email: user.email };
+      const access_token = await this.jwtService.signAsync(payload);
+
+      return {
+        access_token,
+      };
+    } catch (error) {
+      this.logger.error(error.message, error.stack, this.SERVICE);
+      return error?.response || new InternalServerErrorException();
     }
-
-    const isPasswordValid = await argon2.verify(
-      user.password,
-      userDto.password,
-    );
-
-    if (!isPasswordValid) {
-      throw new ConflictException('email or password is incorrect.');
-    }
-
-    const payload = { sub: user.id, email: user.email };
-    const access_token = await this.jwtService.signAsync(payload);
-
-    return {
-      access_token,
-    };
   }
   async updateUserDetail(
     user: IUser,
@@ -83,16 +94,30 @@ export class AuthService {
         ...updateUserDto,
         image: image.url,
       });
-    } catch {
-      throw new InternalServerErrorException();
+    } catch (error) {
+      this.logger.error(error.message, error.stack, this.SERVICE);
+
+      return error?.response || new InternalServerErrorException();
     }
   }
 
   async getUserDetails(user: IUser) {
-    return await this.userRepository.findOneById(user.sub);
+    try {
+      const userData = await this.userRepository.findOneById(user.sub);
+      return userData;
+    } catch (error) {
+      this.logger.error(error.message, error.stack, this.SERVICE);
+      return error?.response || new InternalServerErrorException();
+    }
   }
 
   async sendEmail(sendEmailDto: SendEmailDto) {
-    return this.sendgridService.sendEmail(sendEmailDto);
+    try {
+      await this.sendgridService.sendEmail(sendEmailDto);
+      return { message: 'Email sent successfully.', status: 'success' };
+    } catch (error) {
+      this.logger.error(error.message, error.stack, this.SERVICE);
+      return error?.response || new InternalServerErrorException();
+    }
   }
 }
