@@ -2,7 +2,7 @@ import { IsOptional } from 'class-validator';
 
 export default class UpdateUserDto {
   @IsOptional()
-  file: Express.Multer.File;
+  image: string;
 
   @IsOptional()
   phoneNumber: string;

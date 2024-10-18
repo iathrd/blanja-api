@@ -5,6 +5,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { JwtModule } from '@nestjs/jwt';
 import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 import { SendgridModule } from '../sendgrid/sendgrid.module';
+import { UserRepository } from './user.repository';
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import { SendgridModule } from '../sendgrid/sendgrid.module';
     SendgridModule,
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, UserRepository],
 })
 export class AuthModule {}
