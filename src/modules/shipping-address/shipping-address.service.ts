@@ -40,4 +40,22 @@ export class ShippingAddressService {
       throw new InternalServerErrorException();
     }
   }
+
+  async getShippingAddresses(userId: string) {
+    try {
+      const shippingAddresses =
+        await this.shippingAddressRepository.findAll(userId);
+
+      if (!shippingAddresses) {
+        return new NotFoundException(
+          'Shipping addresses not found',
+        ).getResponse();
+      }
+
+      return shippingAddresses;
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
+  }
 }

@@ -25,4 +25,9 @@ export class ShippingAddressController {
   async getShippingAddress(@Param('id') id: string) {
     return this.shippingAddressService.getShippingAddress(id);
   }
+
+  @Get()
+  async getShippingAddresses(@User() user: IUser) {
+    return this.shippingAddressService.getShippingAddresses(user.sub);
+  }
 }

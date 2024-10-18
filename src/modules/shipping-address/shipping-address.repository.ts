@@ -17,4 +17,10 @@ export class ShippingAddressRepository {
       where: { id },
     });
   }
+
+  async findAll(id: string) {
+    return this.prismaService.shippingAddress.findMany({
+      where: { userId: id },
+    });
+  }
 }
