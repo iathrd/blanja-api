@@ -1,6 +1,7 @@
 import {
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import ShippingAddressDto from './dto/shipping-address.dto';
@@ -10,7 +11,10 @@ import { ShippingAddressRepository } from './shipping-address.repository';
 export class ShippingAddressService {
   constructor(
     private readonly shippingAddressRepository: ShippingAddressRepository,
+    private readonly logger: Logger,
   ) {}
+
+  SERVICE: string = ShippingAddressService.name;
 
   async createShippingAddress(createShippingAddress: ShippingAddressDto) {
     try {
@@ -19,8 +23,8 @@ export class ShippingAddressService {
       );
       return shippingAddress;
     } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException();
+      this.logger.error(error.message, error.stack, this.SERVICE);
+      return error?.response || new InternalServerErrorException();
     }
   }
 
@@ -29,15 +33,13 @@ export class ShippingAddressService {
       const shippingAddress = await this.shippingAddressRepository.findOne(id);
 
       if (!shippingAddress) {
-        return new NotFoundException(
-          'Shipping address not found',
-        ).getResponse();
+        throw new NotFoundException('Shipping address not found');
       }
 
       return shippingAddress;
     } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException();
+      this.logger.error(error.message, error.stack, this.SERVICE);
+      return error?.response || new InternalServerErrorException();
     }
   }
 
@@ -54,8 +56,8 @@ export class ShippingAddressService {
 
       return shippingAddresses;
     } catch (error) {
-      console.log(error);
-      throw new InternalServerErrorException();
+      this.logger.error(error.message, error.stack, this.SERVICE);
+      return error?.response || new InternalServerErrorException();
     }
   }
 }
