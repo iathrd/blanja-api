@@ -8,7 +8,7 @@ export class SendgridService {
     return sgMail
       .send({
         to: sendEmailDto.to,
-        from: sendEmailDto.from || process.env.EMAIL_SENDER,
+        from: process.env.EMAIL_SENDER,
         subject: sendEmailDto.subject,
         text: sendEmailDto.text,
         html: sendEmailDto.html,
