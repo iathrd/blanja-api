@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { WinstonModule } from 'nest-winston';
 import { instance } from './common/utils/witson.logger';
 
@@ -20,6 +20,14 @@ async function bootstrap() {
       },
     }),
   );
+
+  app.enableCors();
+  app.enableVersioning({
+    type: VersioningType.URI,
+    prefix: 'v',
+  });
+  app.setGlobalPrefix('v1');
+
   await app.listen(3000);
 }
 bootstrap();
