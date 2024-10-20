@@ -1,10 +1,5 @@
 import { createLogger, format, transports } from 'winston';
 
-// custom log display format
-const customFormat = format.printf(({ timestamp, level, stack, message }) => {
-  return `${timestamp} - [${level.toUpperCase().padEnd(7)}] - ${stack || message}`;
-});
-
 const options = {
   file: {
     filename: 'error.log',
@@ -18,17 +13,31 @@ const options = {
 // for development environment
 const devLogger = {
   format: format.combine(
-    format.timestamp(),
+    format.colorize({
+      all: true,
+    }),
     format.errors({ stack: true }),
-    customFormat,
+    format.label({
+      label: '[LOGGER]',
+    }),
+    format.timestamp({
+      format: 'YY-MM-DD HH:mm:ss',
+    }),
+    format.printf(
+      (info) =>
+        ` ${info.label}  ${info.timestamp}  ${info.level} : ${info.stack || info.message}`,
+    ),
   ),
+
   transports: [new transports.Console(options.console)],
 };
 
 // for production environment
 const prodLogger = {
   format: format.combine(
-    format.timestamp(),
+    format.timestamp({
+      format: 'YY-MM-DD HH:mm:ss',
+    }),
     format.errors({ stack: true }),
     format.json(),
   ),
