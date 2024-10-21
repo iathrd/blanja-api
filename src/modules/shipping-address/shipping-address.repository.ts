@@ -30,4 +30,10 @@ export class ShippingAddressRepository {
       data: updateRepositoryDto,
     });
   }
+
+  async delete(id: string) {
+    return this.prismaService.shippingAddress.delete({
+      where: { id },
+    });
+  }
 }

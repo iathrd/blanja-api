@@ -93,4 +93,20 @@ export class ShippingAddressService {
       return error?.response || new InternalServerErrorException();
     }
   }
+
+  async deleteShippingAddress(id: string) {
+    try {
+      const cacheKey = `shipping-address-${id}`;
+
+      // Delete the cache
+      await this.cacheManager.del(cacheKey);
+
+      const shippingAddress = await this.shippingAddressRepository.delete(id);
+
+      return shippingAddress;
+    } catch (error) {
+      this.logger.error(error.message, error.stack, this.SERVICE);
+      return error?.response || new InternalServerErrorException();
+    }
+  }
 }

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -43,6 +44,11 @@ export class ShippingAddressController {
       id,
       shippingAddressDto,
     );
+  }
+
+  @Delete(':id')
+  async deleteShippingAddress(@Param('id') id: string) {
+    return this.shippingAddressService.deleteShippingAddress(id);
   }
 
   @Get()
