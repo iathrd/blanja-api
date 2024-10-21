@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  UseGuards,
+} from '@nestjs/common';
 import ShippingAddressDto from './dto/shipping-address.dto';
 import { ShippingAddressService } from './shipping-address.service';
 import { AuthGuard } from 'src/common/guards/auth.guard';
@@ -24,6 +32,17 @@ export class ShippingAddressController {
   @Get(':id')
   async getShippingAddress(@Param('id') id: string) {
     return this.shippingAddressService.getShippingAddress(id);
+  }
+
+  @Put(':id')
+  async updateShippingAddress(
+    @Param('id') id: string,
+    @Body() shippingAddressDto: ShippingAddressDto,
+  ) {
+    return this.shippingAddressService.updateShippingAddress(
+      id,
+      shippingAddressDto,
+    );
   }
 
   @Get()

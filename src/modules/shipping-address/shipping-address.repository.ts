@@ -23,4 +23,11 @@ export class ShippingAddressRepository {
       where: { userId: id },
     });
   }
+
+  async update(id: string, updateRepositoryDto: ShippingAddressDto) {
+    return this.prismaService.shippingAddress.update({
+      where: { id },
+      data: updateRepositoryDto,
+    });
+  }
 }

@@ -62,12 +62,32 @@ export class ShippingAddressService {
         await this.shippingAddressRepository.findAll(userId);
 
       if (!shippingAddresses) {
-        return new NotFoundException(
-          'Shipping addresses not found',
-        ).getResponse();
+        throw new NotFoundException('Shipping addresses not found');
       }
 
       return { data: shippingAddresses };
+    } catch (error) {
+      this.logger.error(error.message, error.stack, this.SERVICE);
+      return error?.response || new InternalServerErrorException();
+    }
+  }
+
+  async updateShippingAddress(
+    id: string,
+    updateShippingAddress: ShippingAddressDto,
+  ) {
+    try {
+      const cacheKey = `shipping-address-${id}`;
+
+      // Delete the cache
+      await this.cacheManager.del(cacheKey);
+
+      const shippingAddress = await this.shippingAddressRepository.update(
+        id,
+        updateShippingAddress,
+      );
+
+      return shippingAddress;
     } catch (error) {
       this.logger.error(error.message, error.stack, this.SERVICE);
       return error?.response || new InternalServerErrorException();
