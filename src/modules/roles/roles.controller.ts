@@ -1,4 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { RolesDto } from './dto/roles.dto';
 import { RolesService } from './roles.service';
 
@@ -6,8 +14,28 @@ import { RolesService } from './roles.service';
 export class RolesController {
   constructor(private rolesService: RolesService) {}
 
+  @Get(':id')
+  getRole(@Param('id') id: number) {
+    return this.rolesService.getRole(id);
+  }
+
+  @Get()
+  getRoles() {
+    return this.rolesService.getRoles();
+  }
+
   @Post()
-  create(@Body() createRolesDto: RolesDto) {
+  createRole(@Body() createRolesDto: RolesDto) {
     return this.rolesService.createRole(createRolesDto);
+  }
+
+  @Delete(':id')
+  deleteRole(@Param('id') id: number) {
+    return this.rolesService.deleteRole(id);
+  }
+
+  @Put(':id')
+  updateRole(@Param('id') id: number, @Body() updateRolesDto: RolesDto) {
+    return this.rolesService.updateRole(id, updateRolesDto);
   }
 }
