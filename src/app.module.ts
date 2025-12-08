@@ -5,6 +5,7 @@ import { EnvSchema, envSchema } from './config/env.schema';
 import { DatabaseModule } from './core/database/database.module';
 import { RolesModule } from './modules/roles/roles.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { AuthModule } from './modules/auth/auth.module';
     }),
     RolesModule,
     AuthModule,
+    UsersModule,
   ],
 })
 export class AppModule {}
