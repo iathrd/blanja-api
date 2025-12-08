@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { AppService } from './app.service';
-import { AuthController } from './modules/auth/auth.controller';
+
 import { ConfigModule } from '@nestjs/config';
 import { EnvSchema, envSchema } from './config/env.schema';
 import { DatabaseModule } from './core/database/database.module';
+import { RolesModule } from './modules/roles/roles.module';
 
 @Module({
   imports: [
@@ -20,8 +20,7 @@ import { DatabaseModule } from './core/database/database.module';
         return parsed.data;
       },
     }),
+    RolesModule,
   ],
-  controllers: [AuthController],
-  providers: [AppService],
 })
 export class AppModule {}

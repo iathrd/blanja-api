@@ -1,6 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { EnvSchema } from 'src/config/env.schema';
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies';
 
 export const getTypeOrmConfig = (
   configService: ConfigService<EnvSchema>,
@@ -12,6 +13,8 @@ export const getTypeOrmConfig = (
   password: configService.getOrThrow('DB_PASSWORD'),
   database: configService.getOrThrow('DB_NAME'),
   autoLoadEntities: true,
-  synchronize: configService.getOrThrow('NODE_ENV') !== 'production',
+  namingStrategy: new SnakeNamingStrategy(),
+  synchronize: true,
+  // synchronize: configService.getOrThrow('NODE_ENV') !== 'production',
   logging: configService.getOrThrow('NODE_ENV') !== 'production',
 });
