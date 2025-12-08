@@ -6,6 +6,7 @@ export const envSchema = z.object({
   DB_USER: z.string(),
   DB_PASSWORD: z.string(),
   DB_NAME: z.string(),
+  JWT_SECRET: z.string(),
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),
