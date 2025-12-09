@@ -6,4 +6,5 @@ export const getJwtConfig = (
   configService: ConfigService<EnvSchema>,
 ): JwtModuleOptions => ({
   secret: configService.get<string>('JWT_SECRET'),
+  secretOrPrivateKey: configService.get<string>('JWT_SECRET'),
 });

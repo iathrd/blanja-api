@@ -3,7 +3,8 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  OneToMany,
+  JoinColumn,
+  ManyToOne,
   PrimaryColumn,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -38,6 +39,7 @@ export class Users {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @OneToMany(() => Roles, (roles) => roles.id)
-  roles: Roles[];
+  @ManyToOne(() => Roles, (role) => role.users, { eager: true })
+  @JoinColumn({ name: 'role_id' })
+  roles: Roles;
 }

@@ -40,4 +40,14 @@ export class UsersService {
 
     return find;
   }
+
+  async getUserByEmail(email: string) {
+    const find = await this.usersRepository.findOne({ where: { email } });
+
+    if (!find) {
+      throw new NotFoundException();
+    }
+
+    return find;
+  }
 }
