@@ -17,7 +17,7 @@ export class Users {
   @Column()
   name: string;
 
-  @Column()
+  @Column({ unique: true })
   email: string;
 
   @Column()
@@ -25,6 +25,9 @@ export class Users {
 
   @Column()
   password: string;
+
+  @Column()
+  profile_picture: string;
 
   @PrimaryColumn()
   role_id: number;
