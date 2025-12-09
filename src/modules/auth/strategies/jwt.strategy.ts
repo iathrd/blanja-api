@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { EnvSchema } from 'src/config/env.schema';
 import { JwtPayload } from 'src/common/interfaces/jwt-payload.interface';
 import { UsersService } from 'src/modules/users/users.service';
-import { Users } from 'src/modules/users/entities/user.entity';
+import { SafeUser } from 'src/common/types/auth.type';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtPayload): Promise<Users> {
+  async validate(payload: JwtPayload): Promise<SafeUser> {
     const { email } = payload;
     const user = await this.userService.getUserByEmail(email);
 
@@ -28,6 +28,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       throw new UnauthorizedException();
     }
 
-    return user;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...safeUser } = user; // remove password safely
+
+    return safeUser;
   }
 }
