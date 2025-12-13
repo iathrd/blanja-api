@@ -4,6 +4,7 @@ import { Users } from './entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { EncryptionService } from 'src/core/encryption/encryption.service';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -49,5 +50,22 @@ export class UsersService {
     }
 
     return find;
+  }
+
+  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+    const { email, name, phone_number, profile_picture, role_id } =
+      updateUserDto;
+
+    const user = await this.getUser(id);
+
+    user.name = name;
+    user.email = email;
+    user.phone_number = phone_number;
+    user.profile_picture = profile_picture;
+    user.role_id = Number(role_id);
+
+    await this.usersRepository.save(user);
+
+    return user;
   }
 }
