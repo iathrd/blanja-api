@@ -17,6 +17,11 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
     const request: Request = context.switchToHttp().getRequest();
     const response: Response = context.switchToHttp().getResponse();
     const statusCode = response.statusCode;
+    const version =
+      request.headers['x-api-version'] ||
+      request.params?.version ||
+      request.url.match(/\/v\d+/)?.[0]?.replace('/', '') ||
+      'v1';
 
     return next.handle().pipe(
       map((data) => ({
@@ -24,7 +29,7 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
         message: 'Success',
         error: null,
         timestamp: Date.now(),
-        version: 'v1',
+        version,
         path: request.url,
         data,
       })),
@@ -38,9 +43,9 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
           message,
           error: errorName,
           timestamp: Date.now(),
-          version: 'v2',
+          version,
           path: request.url,
-          data: {},
+          data: null,
         };
         return throwError(() => new HttpException(errorResponse, statusCode));
       }),
