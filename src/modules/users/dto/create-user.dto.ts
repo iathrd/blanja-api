@@ -1,4 +1,12 @@
-import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  IsArray,
+  ArrayNotEmpty,
+  IsInt,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
   @IsString()
@@ -17,10 +25,12 @@ export class CreateUserDto {
   @MinLength(8)
   password: string;
 
-  @IsOptional()
   @IsString()
   profile_picture: string;
 
-  @IsString()
-  role_id: string;
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsInt({ each: true })
+  @Type(() => Number)
+  role_ids: number[];
 }

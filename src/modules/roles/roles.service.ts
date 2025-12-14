@@ -3,12 +3,15 @@ import { RolesDto } from './dto/roles.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Roles } from './entities/roles.entity';
 import { Repository } from 'typeorm';
+import { UserRoles } from './entities/user-roles.entity';
 
 @Injectable()
 export class RolesService {
   constructor(
     @InjectRepository(Roles)
     private rolesRepository: Repository<Roles>,
+    @InjectRepository(UserRoles)
+    private userRolesRepository: Repository<UserRoles>,
   ) {}
 
   async getRoles() {
@@ -35,6 +38,14 @@ export class RolesService {
     await this.rolesRepository.save(role);
 
     return role;
+  }
+
+  async createUserRoles(userId: string, roleIds: number[]) {
+    const userRoles = roleIds.map((roleId) => ({
+      user_id: userId,
+      role_id: roleId,
+    }));
+    await this.userRolesRepository.insert(userRoles);
   }
 
   async updateRole(id: number, updateRoleDto: RolesDto) {

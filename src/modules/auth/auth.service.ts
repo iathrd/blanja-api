@@ -32,7 +32,7 @@ export class AuthService {
       throw new BadRequestException('wrong email or password');
     }
 
-    const payload = { id: user.id, email: user.email, role: user.roles.name };
+    const payload = { id: user.id, email: user.email, roles: user.roles };
     const secret = this.configService.get<string>('JWT_SECRET');
 
     const accessToken = await this.jwtService.signAsync(payload, {
