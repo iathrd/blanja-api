@@ -77,13 +77,21 @@ export class UsersService {
   }
 
   async getUserByEmail(email: string) {
-    const find = await this.usersRepository.findOne({ where: { email } });
+    const user = await this.usersRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.roles', 'roles')
+      .leftJoinAndSelect('roles.role', 'role')
+      .where('user.email = :email', { email })
+      .getOne();
 
-    if (!find) {
+    if (!user) {
       throw new NotFoundException();
     }
 
-    return find;
+    return {
+      ...user,
+      roles: user.roles.map((ur) => ur.role.name),
+    };
   }
 
   async updateUser(id: string, updateUserDto: UpdateUserDto) {
