@@ -9,14 +9,11 @@ import {
 
 export class CreateUserAddressDto {
   @IsString()
-  user_id: string;
-
-  @IsString()
   @MinLength(5)
   recipient_name: string;
 
   @IsString()
-  @MinLength(5)
+  @MinLength(4)
   as: string;
 
   @IsBoolean()

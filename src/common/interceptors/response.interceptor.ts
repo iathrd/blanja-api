@@ -1,11 +1,10 @@
 import {
   CallHandler,
   ExecutionContext,
-  HttpException,
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
-import { catchError, map, Observable, throwError } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { Request, Response } from 'express';
 
 @Injectable()
@@ -33,22 +32,6 @@ export class ResponseInterceptor<T> implements NestInterceptor<T, any> {
         path: request.url,
         data,
       })),
-      catchError((err: unknown) => {
-        const statusCode = err instanceof HttpException ? err.getStatus() : 500;
-        const message =
-          err instanceof Error ? err.message : 'Internal server error';
-        const errorName = err instanceof Error ? err.name : 'Error';
-        const errorResponse = {
-          statusCode,
-          message,
-          error: errorName,
-          timestamp: Date.now(),
-          version,
-          path: request.url,
-          data: null,
-        };
-        return throwError(() => new HttpException(errorResponse, statusCode));
-      }),
     );
   }
 }
