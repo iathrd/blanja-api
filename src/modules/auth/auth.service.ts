@@ -5,6 +5,7 @@ import { UsersService } from '../users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { EnvSchema } from 'src/config/env.schema';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 
 @Injectable()
 export class AuthService {
@@ -31,8 +32,10 @@ export class AuthService {
       throw new BadRequestException('wrong email or password');
     }
 
-    const payload = { id: user.id, email: user.email, role: user.roles.name };
+    const payload = { id: user.id, email: user.email, roles: user.roles };
     const secret = this.configService.get<string>('JWT_SECRET');
+
+    console.log('payload', payload);
 
     const accessToken = await this.jwtService.signAsync(payload, {
       secret,
@@ -48,5 +51,9 @@ export class AuthService {
       access_token: accessToken,
       refresh_token: refreshToken,
     };
+  }
+
+  async signUp(createUserDto: CreateUserDto) {
+    return this.usersService.createUser(createUserDto);
   }
 }

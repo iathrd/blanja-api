@@ -1,14 +1,15 @@
+import { Type } from 'class-transformer';
 import {
+  ArrayNotEmpty,
+  IsArray,
   IsEmail,
+  IsInt,
+  IsOptional,
   IsString,
   MinLength,
-  IsArray,
-  ArrayNotEmpty,
-  IsInt,
 } from 'class-validator';
-import { Type } from 'class-transformer';
 
-export class CreateUserDto {
+export class UpdateUserDto {
   @IsString()
   @MinLength(5)
   name: string;
@@ -21,10 +22,7 @@ export class CreateUserDto {
   @MinLength(11)
   phone_number: string;
 
-  @IsString()
-  @MinLength(8)
-  password: string;
-
+  @IsOptional()
   @IsString()
   profile_picture: string;
 

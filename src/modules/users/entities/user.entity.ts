@@ -1,11 +1,9 @@
-import { Roles } from 'src/modules/roles/entities/roles.entity';
+import { UserRoles } from 'src/modules/roles/entities/user-roles.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryColumn,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -27,11 +25,8 @@ export class Users {
   @Column()
   password: string;
 
-  @Column()
+  @Column({ nullable: true })
   profile_picture: string;
-
-  @PrimaryColumn()
-  role_id: number;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
@@ -39,7 +34,6 @@ export class Users {
   @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @ManyToOne(() => Roles, (role) => role.users, { eager: true })
-  @JoinColumn({ name: 'role_id' })
-  roles: Roles;
+  @OneToMany(() => UserRoles, (userRole) => userRole.user)
+  roles: UserRoles[];
 }
