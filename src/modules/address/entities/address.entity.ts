@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { UserAddress } from './user_address.entity';
 
 @Entity('address')
 export class Address {
@@ -22,4 +23,9 @@ export class Address {
 
   @Column()
   postal_code: string;
+
+  @OneToMany(() => UserAddress, (ua) => ua.address, {
+    cascade: true,
+  })
+  userAddresses: UserAddress[];
 }
