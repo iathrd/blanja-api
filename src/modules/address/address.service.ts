@@ -7,6 +7,7 @@ import { UpdateAddressDto } from './dto/update-address.dto';
 import { CreateUserAddressDto } from './dto/create-user-address.dto';
 
 import { UserAddress } from './entities/user_address.entity';
+import { IUserAddress } from 'src/common/types/address.type';
 
 @Injectable()
 export class AddressService {
@@ -18,12 +19,25 @@ export class AddressService {
     private dataSource: DataSource,
   ) {}
 
-  async getUserAddress(userId: string) {
-    const addresses = await this.userAddressRepository.find({
-      where: { user_id: userId },
-      relations: ['address'],
-      order: { is_default: 'DESC' },
-    });
+  async getUserAddress(userId: string): Promise<IUserAddress[]> {
+    const query = this.userAddressRepository.createQueryBuilder('ua');
+    const addresses: IUserAddress[] = await query
+      .innerJoin('ua.address', 'a')
+      .select([
+        'a.id AS id',
+        'ua.recipient_name AS recipient_name',
+        'ua.as AS label',
+        'ua.is_default AS is_default',
+        'a.phone_number AS phone_number',
+        'a.address AS address',
+        'a.province AS province',
+        'a.district AS district',
+        'a.sub_district AS sub_district',
+        'a.postal_code AS postal_code',
+      ])
+      .where('ua.user_id = :userId', { userId })
+      .orderBy('ua.is_default', 'DESC')
+      .getRawMany();
 
     if (!addresses.length) {
       throw new NotFoundException('User address not found');
