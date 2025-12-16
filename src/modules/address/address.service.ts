@@ -13,8 +13,24 @@ export class AddressService {
   constructor(
     @InjectRepository(Address)
     private addressRepository: Repository<Address>,
+    @InjectRepository(UserAddress)
+    private userAddressRepository: Repository<UserAddress>,
     private dataSource: DataSource,
   ) {}
+
+  async getUserAddress(userId: string) {
+    const addresses = await this.userAddressRepository.find({
+      where: { user_id: userId },
+      relations: ['address'],
+      order: { is_default: 'DESC' },
+    });
+
+    if (!addresses.length) {
+      throw new NotFoundException('User address not found');
+    }
+
+    return addresses;
+  }
 
   async createAddress(createAddressDto: CreateAddressDto) {
     const address = this.addressRepository.create(createAddressDto);
