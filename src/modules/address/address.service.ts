@@ -8,6 +8,7 @@ import { CreateUserAddressDto } from './dto/create-user-address.dto';
 
 import { UserAddress } from './entities/user_address.entity';
 import { IUserAddress } from 'src/common/types/address.type';
+import { UpdateUserAddressDto } from './dto/update-user-address.do';
 
 @Injectable()
 export class AddressService {
@@ -93,6 +94,65 @@ export class AddressService {
       return {
         ...savedAddress,
         ...savedUserAddress,
+      };
+    });
+  }
+
+  async updateUserAddress(
+    userAddressId: number,
+    updateUserAddressDto: UpdateUserAddressDto,
+  ) {
+    return this.dataSource.transaction(async (manager) => {
+      const {
+        address,
+        district,
+        phone_number,
+        postal_code,
+        province,
+        sub_district,
+        as,
+        is_default,
+        recipient_name,
+      } = updateUserAddressDto;
+
+      const userAddress = await manager.findOne(UserAddress, {
+        where: { address_id: userAddressId },
+      });
+
+      if (!userAddress) {
+        throw new NotFoundException('User address not found');
+      }
+
+      const addressEntity = await manager.findOne(Address, {
+        where: { id: userAddress.address_id },
+      });
+
+      if (!addressEntity) {
+        throw new NotFoundException('Address not found');
+      }
+
+      manager.merge(Address, addressEntity, {
+        address,
+        district,
+        phone_number,
+        postal_code,
+        province,
+        sub_district,
+      });
+
+      await manager.save(addressEntity);
+
+      manager.merge(UserAddress, userAddress, {
+        as,
+        is_default,
+        recipient_name,
+      });
+
+      await manager.save(userAddress);
+
+      return {
+        ...addressEntity,
+        ...userAddress,
       };
     });
   }

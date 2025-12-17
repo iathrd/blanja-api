@@ -16,6 +16,7 @@ import { Users } from '../users/entities/user.entity';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decoratos/roles.decorator';
+import { UpdateUserAddressDto } from './dto/update-user-address.do';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('superadmin', 'user', 'admin')
@@ -31,6 +32,14 @@ export class AddressController {
   @Post()
   createAddress(@Body() createAddressDto: CreateAddressDto) {
     return this.addressService.createAddress(createAddressDto);
+  }
+
+  @Put('user/:id')
+  updateUserAddess(
+    @Param('id') id: string,
+    @Body() updateUserAddressDto: UpdateUserAddressDto,
+  ) {
+    return this.addressService.updateUserAddress(+id, updateUserAddressDto);
   }
 
   @Post('user')
