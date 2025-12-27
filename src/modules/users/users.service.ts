@@ -6,6 +6,9 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { EncryptionService } from 'src/core/encryption/encryption.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserRoles } from '../roles/entities/user-roles.entity';
+import { CreateUserStoreDto } from './dto/create-user-store';
+import { Stores } from '../stores/entities/stores.entity';
+import { Address } from '../address/entities/address.entity';
 
 @Injectable()
 export class UsersService {
@@ -15,6 +18,71 @@ export class UsersService {
     private encryptionService: EncryptionService,
     private dataSource: DataSource,
   ) {}
+
+  async registerUserStore(CreateUserStoreDto: CreateUserStoreDto) {
+    return this.dataSource.transaction(async (manager) => {
+      const {
+        store_name,
+        email,
+        name,
+        password,
+        phone_number,
+        profile_picture,
+        role_ids,
+        address,
+        city,
+        postal_code,
+        province,
+        district,
+        sub_district,
+      } = CreateUserStoreDto;
+
+      const hashedPassword =
+        await this.encryptionService.hashPassword(password);
+
+      const user = manager.create(Users, {
+        name,
+        email,
+        password: hashedPassword,
+        phone_number,
+        profile_picture,
+      });
+
+      const savedUser = await manager.save(user);
+
+      const userRoles = role_ids.map((roleId) => ({
+        user_id: savedUser.id,
+        role_id: roleId,
+      }));
+
+      await manager.insert(UserRoles, userRoles);
+
+      const addressData = manager.create(Address, {
+        phone_number,
+        address,
+        city,
+        postal_code,
+        province,
+        district,
+        sub_district,
+      });
+
+      const savedAddress = await manager.save(addressData);
+
+      if (!user) {
+        throw new NotFoundException('User not found');
+      }
+
+      const store = manager.create(Stores, {
+        user_id: savedUser.id,
+        address_id: +savedAddress.id,
+        name: store_name,
+      });
+
+      return await manager.save(store);
+    });
+  }
+
   async createUser(createUserDto: CreateUserDto) {
     const queryRunner = this.dataSource.createQueryRunner();
 
