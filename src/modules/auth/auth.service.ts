@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { EnvSchema } from 'src/config/env.schema';
 import { CreateUserDto } from '../users/dto/create-user.dto';
+import { CreateUserStoreDto } from '../users/dto/create-user-store';
 
 @Injectable()
 export class AuthService {
@@ -55,5 +56,9 @@ export class AuthService {
 
   async signUp(createUserDto: CreateUserDto) {
     return this.usersService.createUser(createUserDto);
+  }
+
+  async registerUserStore(createUserStoreDto: CreateUserStoreDto) {
+    return this.usersService.registerUserStore(createUserStoreDto);
   }
 }
