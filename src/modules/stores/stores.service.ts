@@ -9,10 +9,11 @@ export class StoresService {
     @InjectRepository(Stores)
     private storesRepository: Repository<Stores>,
   ) {}
-  async getStores() {
+  async getStores(userId: string) {
     return await this.storesRepository
       .createQueryBuilder('store')
-      .leftJoinAndSelect('store.addressStore', 'address')
+      .leftJoinAndSelect('store.address', 'address')
+      .where('store.user_id = :userId', { userId })
       .getMany();
   }
 }

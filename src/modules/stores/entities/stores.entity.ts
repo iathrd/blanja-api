@@ -2,7 +2,8 @@ import { Address } from 'src/modules/address/entities/address.entity';
 import {
   Column,
   Entity,
-  OneToMany,
+  JoinColumn,
+  OneToOne,
   PrimaryColumn,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -21,8 +22,7 @@ export class Stores {
   @Column()
   name: string;
 
-  @OneToMany(() => Address, (address) => address.stores, {
-    cascade: true,
-  })
-  addressStore: Address[];
+  @OneToOne(() => Address, { eager: false })
+  @JoinColumn({ name: 'address_id' })
+  address: Address;
 }
