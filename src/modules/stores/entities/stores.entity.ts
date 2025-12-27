@@ -1,4 +1,11 @@
-import { Column, Entity, PrimaryColumn, PrimaryGeneratedColumn } from 'typeorm';
+import { Address } from 'src/modules/address/entities/address.entity';
+import {
+  Column,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity('stores')
 export class Stores {
@@ -13,4 +20,9 @@ export class Stores {
 
   @Column()
   name: string;
+
+  @OneToMany(() => Address, (address) => address.stores, {
+    cascade: true,
+  })
+  addressStore: Address[];
 }

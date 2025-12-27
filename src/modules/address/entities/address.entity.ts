@@ -1,5 +1,12 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToMany,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { UserAddress } from './user_address.entity';
+import { Stores } from 'src/modules/stores/entities/stores.entity';
 
 @Entity('address')
 export class Address {
@@ -28,4 +35,7 @@ export class Address {
     cascade: true,
   })
   userAddresses: UserAddress[];
+
+  @ManyToMany(() => Stores, (store) => store.addressStore)
+  stores: Stores[];
 }
