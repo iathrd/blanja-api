@@ -16,7 +16,7 @@ export class Stores {
   user_id: string;
 
   @PrimaryColumn()
-  address_id: string;
+  address_id: number;
 
   @Column()
   name: string;
