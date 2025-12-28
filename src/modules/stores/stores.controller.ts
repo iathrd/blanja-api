@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards } from '@nestjs/common';
 import { StoresService } from './stores.service';
 import { JwtAuthGuard } from 'src/common/guards/jwt.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
@@ -15,5 +15,10 @@ export class StoresController {
   @Get()
   getStores(@GetUser() user: Users) {
     return this.storesService.getStores(user.id);
+  }
+
+  @Get(':id')
+  getStoreById(@Param('id') id: string, @GetUser() user: Users) {
+    return this.storesService.getStoreById(id, user.id);
   }
 }
