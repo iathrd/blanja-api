@@ -13,6 +13,8 @@ import { UserRoles } from '../roles/entities/user-roles.entity';
 import { CreateUserStoreDto } from './dto/create-user-store';
 import { Stores } from '../stores/entities/stores.entity';
 import { Address } from '../address/entities/address.entity';
+import { RedisService } from 'src/core/redis/redis.service';
+import { CacheKeys } from 'src/core/redis/cache.keys';
 
 @Injectable()
 export class UsersService {
@@ -21,6 +23,7 @@ export class UsersService {
     private usersRepository: Repository<Users>,
     private encryptionService: EncryptionService,
     private dataSource: DataSource,
+    private redisService: RedisService,
   ) {}
 
   async registerUserStore(CreateUserStoreDto: CreateUserStoreDto) {
@@ -143,6 +146,11 @@ export class UsersService {
   }
 
   async getUser(id: string) {
+    const cacheKey = CacheKeys.users.byId(id);
+
+    const cached = await this.redisService.get<Users>(cacheKey);
+    if (cached) return cached;
+
     const user = await this.usersRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.roles', 'roles')
@@ -154,10 +162,14 @@ export class UsersService {
       throw new NotFoundException();
     }
 
-    return {
+    const response = {
       ...user,
       roles: user.roles.map((ur) => ur.role.name),
     };
+
+    await this.redisService.set(cacheKey, response, 300);
+
+    return response;
   }
 
   async getUserByEmail(email: string) {

@@ -19,8 +19,6 @@ import { RedisModule } from './core/redis/redis.module';
       validate: (env) => {
         const parsed = envSchema.safeParse(env);
 
-        console.log('Parsed ENV:', parsed);
-
         if (!parsed.success) {
           throw new Error('Invalid environment variables');
         }

@@ -1,14 +1,16 @@
 import { CacheModuleOptions } from '@nestjs/cache-manager';
 import { ConfigService } from '@nestjs/config';
 import { EnvSchema } from 'src/config/env.schema';
-import * as redisStore from 'cache-manager-ioredis-yet';
+
+import KeyvRedis from '@keyv/redis';
 
 export const getRedisConfig = (
   configService: ConfigService<EnvSchema>,
 ): CacheModuleOptions => ({
   isGlobal: true,
-  store: redisStore,
-  host: configService.getOrThrow('REDIS_HOST'),
-  port: configService.getOrThrow('REDIS_PORT'),
-  ttl: 60,
+  stores: [
+    new KeyvRedis(
+      `redis://${configService.getOrThrow('REDIS_HOST')}:${configService.getOrThrow('REDIS_PORT')}`,
+    ),
+  ],
 });

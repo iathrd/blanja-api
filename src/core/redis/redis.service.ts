@@ -12,7 +12,8 @@ export class RedisService {
   }
 
   async set<T>(key: string, value: T, ttl = 60): Promise<void> {
-    await this.cache.set(key, value, ttl);
+    const ttlMs = ttl ? ttl * 1000 : undefined;
+    await this.cache.set(key, value, ttlMs);
   }
 
   async del(key: string): Promise<void> {
