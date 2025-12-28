@@ -7,6 +7,8 @@ export const envSchema = z.object({
   DB_PASSWORD: z.string(),
   DB_NAME: z.string(),
   JWT_SECRET: z.string(),
+  REDIS_HOST: z.string(),
+  REDIS_PORT: z.string().transform(Number),
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),

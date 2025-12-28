@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './entities/user.entity';
 import { DataSource, Repository } from 'typeorm';
@@ -117,9 +121,21 @@ export class UsersService {
 
       return savedUser;
     } catch (error) {
-      // Rollback everything
       await queryRunner.rollbackTransaction();
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (error?.code === '23505') {
+        throw new BadRequestException(
+          'User with the same email or phone number already exists',
+        );
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      if (error?.code === 'ER_DUP_ENTRY') {
+        throw new BadRequestException(
+          'User with the same email or phone number already exists',
+        );
+      }
       throw error; // rethrow for global exception filter
     } finally {
       await queryRunner.release();

@@ -47,7 +47,7 @@ export class AddressService {
     return addresses;
   }
 
-  async createAddress(createAddressDto: CreateAddressDto) {
+  async createAddress(createAddressDto: CreateAddressDto): Promise<Address> {
     const address = this.addressRepository.create(createAddressDto);
     await this.addressRepository.save(address);
     return address;
