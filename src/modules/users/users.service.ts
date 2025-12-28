@@ -173,6 +173,13 @@ export class UsersService {
   }
 
   async getUserByEmail(email: string) {
+    const cacheKey = CacheKeys.users.byId(email);
+
+    const cached = await this.redisService.get<Users & { roles: string[] }>(
+      cacheKey,
+    );
+    if (cached) return cached;
+
     const user = await this.usersRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.roles', 'roles')
@@ -184,10 +191,14 @@ export class UsersService {
       throw new NotFoundException();
     }
 
-    return {
+    const response = {
       ...user,
       roles: user.roles.map((ur) => ur.role.name),
     };
+
+    await this.redisService.set(cacheKey, response, 300);
+
+    return response;
   }
 
   async updateUser(id: string, updateUserDto: UpdateUserDto) {
@@ -218,6 +229,9 @@ export class UsersService {
 
         await manager.insert(UserRoles, userRoles);
       }
+
+      await this.redisService.del(CacheKeys.users.byId(id));
+      await this.redisService.del(CacheKeys.users.byId(email));
 
       return user;
     });
