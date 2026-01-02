@@ -16,11 +16,11 @@ export class CreateStoreDto {
   province: string;
 
   @IsString()
-  city: string;
-
-  @IsString()
   district: string;
 
   @IsString()
   sub_district: string;
+
+  @IsString()
+  postal_code: string;
 }
