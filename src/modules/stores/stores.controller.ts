@@ -5,6 +5,7 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decoratos/roles.decorator';
 import { GetUser } from 'src/common/decoratos/get-user.decorator';
 import { Users } from '../users/entities/user.entity';
+import type { SafeUser } from 'src/common/types/auth.type';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles('superadmin', 'admin')
@@ -12,9 +13,14 @@ import { Users } from '../users/entities/user.entity';
 export class StoresController {
   constructor(private storesService: StoresService) {}
 
-  @Get()
-  getStores(@GetUser() user: Users) {
-    return this.storesService.getStores(user.id);
+  @Get('/me')
+  getMyStores(@GetUser() user: SafeUser) {
+    return this.storesService.getMyStores(user);
+  }
+
+  @Get('/')
+  getAllStores() {
+    return this.storesService.getAllStores();
   }
 
   @Get(':id')

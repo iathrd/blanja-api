@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Stores } from './entities/stores.entity';
 import { Repository } from 'typeorm';
+import { SafeUser } from 'src/common/types/auth.type';
 
 @Injectable()
 export class StoresService {
@@ -9,11 +10,19 @@ export class StoresService {
     @InjectRepository(Stores)
     private storesRepository: Repository<Stores>,
   ) {}
-  async getStores(userId: string) {
+  async getMyStores(user: SafeUser) {
     return await this.storesRepository
       .createQueryBuilder('store')
       .leftJoinAndSelect('store.address', 'address')
-      .where('store.user_id = :userId', { userId })
+      .where('store.user_id = :userId', { userId: user.id })
+      .getMany();
+  }
+
+  async getAllStores() {
+    return await this.storesRepository
+      .createQueryBuilder('store')
+      .leftJoinAndSelect('store.address', 'address')
+
       .getMany();
   }
 
