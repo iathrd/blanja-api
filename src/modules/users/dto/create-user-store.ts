@@ -25,8 +25,4 @@ export class CreateUserStoreDto extends CreateUserDto {
   @IsString()
   @MinLength(4)
   sub_district: string;
-
-  @IsString()
-  @MinLength(4)
-  city: string;
 }

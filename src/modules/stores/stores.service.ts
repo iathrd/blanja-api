@@ -4,7 +4,6 @@ import { Stores } from './entities/stores.entity';
 import { DataSource, Repository } from 'typeorm';
 import { SafeUser } from 'src/common/types/auth.type';
 import { CreateStoreDto } from './dto/create-store-dto';
-
 import { Address } from '../address/entities/address.entity';
 
 @Injectable()
