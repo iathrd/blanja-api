@@ -57,19 +57,19 @@ export class AddressService {
     userId: string,
     createUserAddressDto: CreateUserAddressDto,
   ) {
-    return this.dataSource.transaction(async (manager) => {
-      const {
-        address,
-        district,
-        phone_number,
-        postal_code,
-        province,
-        sub_district,
-        as,
-        is_default,
-        recipient_name,
-      } = createUserAddressDto;
+    const {
+      address,
+      district,
+      phone_number,
+      postal_code,
+      province,
+      sub_district,
+      as,
+      is_default,
+      recipient_name,
+    } = createUserAddressDto;
 
+    return this.dataSource.transaction(async (manager) => {
       const savedAddress = manager.create(Address, {
         address,
         district,
@@ -102,19 +102,19 @@ export class AddressService {
     userAddressId: number,
     updateUserAddressDto: UpdateUserAddressDto,
   ) {
-    return this.dataSource.transaction(async (manager) => {
-      const {
-        address,
-        district,
-        phone_number,
-        postal_code,
-        province,
-        sub_district,
-        as,
-        is_default,
-        recipient_name,
-      } = updateUserAddressDto;
+    const {
+      address,
+      district,
+      phone_number,
+      postal_code,
+      province,
+      sub_district,
+      as,
+      is_default,
+      recipient_name,
+    } = updateUserAddressDto;
 
+    return this.dataSource.transaction(async (manager) => {
       const userAddress = await manager.findOne(UserAddress, {
         where: { address_id: userAddressId },
       });

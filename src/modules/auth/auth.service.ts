@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 import { EnvSchema } from 'src/config/env.schema';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { CreateUserStoreDto } from '../users/dto/create-user-store';
+import { JwtPayload } from 'src/common/types/user.type';
 
 @Injectable()
 export class AuthService {
@@ -50,6 +51,37 @@ export class AuthService {
       access_token: accessToken,
       refresh_token: refreshToken,
     };
+  }
+
+  async refreshToken(refreshToken: string) {
+    try {
+      const secret = this.configService.get<string>('JWT_SECRET');
+
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(
+        refreshToken,
+        { secret },
+      );
+
+      const user = await this.usersService.getUser(payload.id);
+      if (!user) {
+        throw new BadRequestException('Invalid refresh token');
+      }
+
+      const newPayload: JwtPayload = {
+        id: user.id,
+        email: user.email,
+        roles: user.roles,
+      };
+
+      return {
+        access_token: await this.jwtService.signAsync(newPayload, {
+          secret,
+          expiresIn: '3h',
+        }),
+      };
+    } catch {
+      throw new BadRequestException('Invalid or expired refresh token');
+    }
   }
 
   async signUp(createUserDto: CreateUserDto) {

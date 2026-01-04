@@ -3,6 +3,7 @@ import { SignInDto } from './dto/sign-in.dto';
 import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { CreateUserStoreDto } from '../users/dto/create-user-store';
+import { RefreshTokenDto } from './dto/refresh-token.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -11,6 +12,11 @@ export class AuthController {
   @Post('login')
   signIn(@Body() signInDto: SignInDto) {
     return this.authService.signIn(signInDto);
+  }
+
+  @Post('refresh')
+  refresh(@Body() dto: RefreshTokenDto) {
+    return this.authService.refreshToken(dto.refresh_token);
   }
 
   @Post('register')

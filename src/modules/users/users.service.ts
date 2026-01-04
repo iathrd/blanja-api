@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Users } from './entities/user.entity';
 import { DataSource, EntityManager, Repository } from 'typeorm';
@@ -17,6 +13,7 @@ import { RedisService } from 'src/core/redis/redis.service';
 import { CacheKeys } from 'src/core/redis/cache.keys';
 import { duplicateError } from 'src/common/utils/errors';
 import { CreateAddressDto } from '../address/dto/create-address.dto';
+import { IUserData } from 'src/common/types/user.type';
 
 @Injectable()
 export class UsersService {
@@ -92,22 +89,22 @@ export class UsersService {
   }
 
   async registerUserStore(createUserStoreDto: CreateUserStoreDto) {
-    return this.dataSource.transaction(async (manager) => {
-      const {
-        store_name,
-        email,
-        name,
-        password,
-        phone_number,
-        profile_picture,
-        role_ids,
-        address,
-        postal_code,
-        province,
-        district,
-        sub_district,
-      } = createUserStoreDto;
+    const {
+      store_name,
+      email,
+      name,
+      password,
+      phone_number,
+      profile_picture,
+      role_ids,
+      address,
+      postal_code,
+      province,
+      district,
+      sub_district,
+    } = createUserStoreDto;
 
+    return this.dataSource.transaction(async (manager) => {
       const savedUser = await this.txInsertUser(manager, {
         email,
         name,
@@ -136,7 +133,7 @@ export class UsersService {
     });
   }
 
-  async createUser(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto): Promise<Users> {
     const { email, name, password, phone_number, profile_picture, role_ids } =
       createUserDto;
 
@@ -154,10 +151,10 @@ export class UsersService {
     });
   }
 
-  async getUser(id: string) {
+  async getUser(id: string): Promise<IUserData> {
     const cacheKey = CacheKeys.users.byId(id);
 
-    const cached = await this.redisService.get<Users>(cacheKey);
+    const cached = await this.redisService.get<IUserData>(cacheKey);
     if (cached) return cached;
 
     const user = await this.usersRepository
@@ -181,7 +178,7 @@ export class UsersService {
     return response;
   }
 
-  async getUserByEmail(email: string) {
+  async getUserByEmail(email: string): Promise<IUserData> {
     const cacheKey = CacheKeys.users.byId(email);
 
     const cached = await this.redisService.get<Users & { roles: string[] }>(
@@ -210,7 +207,7 @@ export class UsersService {
     return response;
   }
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+  async updateUser(id: string, updateUserDto: UpdateUserDto): Promise<Users> {
     return this.dataSource.transaction(async (manager) => {
       const { email, name, phone_number, profile_picture, role_ids } =
         updateUserDto;
