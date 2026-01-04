@@ -25,7 +25,7 @@ export class AuthService {
       throw new BadRequestException('wrong email or password');
     }
 
-    const valid = await this.encryptionService.verifyPassword(
+    const valid = await this.encryptionService.verify(
       user.password,
       signInDto.password,
     );

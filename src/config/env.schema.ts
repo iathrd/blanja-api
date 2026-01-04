@@ -9,6 +9,9 @@ export const envSchema = z.object({
   JWT_SECRET: z.string(),
   REDIS_HOST: z.string(),
   REDIS_PORT: z.string().transform(Number),
+  BREVO_API_KEY: z.string(),
+  BREVO_SENDER_EMAIL: z.string(),
+  BREVO_SENDER_NAME: z.string(),
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),

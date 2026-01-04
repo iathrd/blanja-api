@@ -5,9 +5,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Users } from './entities/user.entity';
 import { EncryptionModule } from 'src/core/encryption/encryption.module';
 import { RolesModule } from '../roles/roles.module';
+import { BrevoModule } from 'src/core/brevo/brevo.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Users]), EncryptionModule, RolesModule],
+  imports: [
+    TypeOrmModule.forFeature([Users]),
+    EncryptionModule,
+    RolesModule,
+    BrevoModule,
+  ],
   controllers: [UsersController],
   providers: [UsersService],
   exports: [UsersService],

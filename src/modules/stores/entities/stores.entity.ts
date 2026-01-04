@@ -1,8 +1,10 @@
 import { Address } from 'src/modules/address/entities/address.entity';
+import { Users } from 'src/modules/users/entities/user.entity';
 import {
   Column,
   Entity,
   JoinColumn,
+  ManyToOne,
   OneToOne,
   PrimaryColumn,
   PrimaryGeneratedColumn,
@@ -25,4 +27,8 @@ export class Stores {
   @OneToOne(() => Address, { eager: false })
   @JoinColumn({ name: 'address_id' })
   address: Address;
+
+  @ManyToOne(() => Users, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'user_id' })
+  user: Users;
 }

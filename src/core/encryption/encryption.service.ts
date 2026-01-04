@@ -7,9 +7,9 @@ export class EncryptionService {
   /**
    * Hash a password using Argon2id.
    */
-  async hashPassword(password: string): Promise<string> {
+  async hash(value: string): Promise<string> {
     try {
-      const hashed = await argon2.hash(password, {
+      const hashed = await argon2.hash(value, {
         type: argon2.argon2id,
         memoryCost: 256 * 1024, // 256 MB
         timeCost: 3,
@@ -28,9 +28,9 @@ export class EncryptionService {
   /**
    * Verify a password against a stored Argon2id hash.
    */
-  async verifyPassword(hash: string, password: string): Promise<boolean> {
+  async verify(hash: string, value: string): Promise<boolean> {
     try {
-      const isValid = await argon2.verify(hash, password);
+      const isValid = await argon2.verify(hash, value);
 
       return isValid;
     } catch (err: unknown) {
@@ -44,12 +44,12 @@ export class EncryptionService {
   /**
    * Derive a 32-byte symmetric key using Argon2id (AES-256 compatible).
    */
-  async deriveKey(password: string): Promise<string> {
+  async deriveKey(value: string): Promise<string> {
     try {
       const salt = crypto.randomBytes(16);
 
       // Output is Buffer | string, ESLint hates it
-      const result = await argon2.hash(password, {
+      const result = await argon2.hash(value, {
         type: argon2.argon2id,
         memoryCost: 256 * 1024,
         timeCost: 3,

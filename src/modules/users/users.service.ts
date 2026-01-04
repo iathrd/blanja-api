@@ -14,6 +14,8 @@ import { CacheKeys } from 'src/core/redis/cache.keys';
 import { duplicateError } from 'src/common/utils/errors';
 import { CreateAddressDto } from '../address/dto/create-address.dto';
 import { IUserData } from 'src/common/types/user.type';
+import { BrevoService } from 'src/core/brevo/brevo.service';
+import { generateOtp } from 'src/common/utils/verification';
 
 @Injectable()
 export class UsersService {
@@ -23,6 +25,7 @@ export class UsersService {
     private encryptionService: EncryptionService,
     private dataSource: DataSource,
     private redisService: RedisService,
+    private brevoService: BrevoService,
   ) {}
 
   async txInsertUser(
@@ -33,8 +36,7 @@ export class UsersService {
       createUserDto;
 
     try {
-      const hashedPassword =
-        await this.encryptionService.hashPassword(password);
+      const hashedPassword = await this.encryptionService.hash(password);
 
       const user = manager.create(Users, {
         name,
@@ -104,7 +106,7 @@ export class UsersService {
       sub_district,
     } = createUserStoreDto;
 
-    return this.dataSource.transaction(async (manager) => {
+    const result = await this.dataSource.transaction(async (manager) => {
       const savedUser = await this.txInsertUser(manager, {
         email,
         name,
@@ -129,8 +131,25 @@ export class UsersService {
         name: store_name,
       });
 
-      return await manager.save(store);
+      const savedStore = await manager.save(store);
+
+      return {
+        user: savedUser,
+        address: savedAddress,
+        store: savedStore,
+      };
     });
+
+    const otpNumber = generateOtp();
+    const hashedOtp = await this.encryptionService.hash(otpNumber);
+
+    await this.brevoService.sendMail({
+      receivers: [{ email, name }],
+      subject: 'Verify Otp',
+      htmlContent: `<h1>${otpNumber}</h1>`,
+    });
+
+    return { ...result, hashedOtp };
   }
 
   async createUser(createUserDto: CreateUserDto): Promise<Users> {

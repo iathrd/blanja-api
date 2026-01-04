@@ -26,6 +26,7 @@ export class Address {
 
   @OneToMany(() => UserAddress, (ua) => ua.address, {
     cascade: true,
+    onDelete: 'CASCADE',
   })
   userAddresses: UserAddress[];
 }
