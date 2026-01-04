@@ -137,58 +137,21 @@ export class UsersService {
   }
 
   async createUser(createUserDto: CreateUserDto) {
-    const queryRunner = this.dataSource.createQueryRunner();
+    const { email, name, password, phone_number, profile_picture, role_ids } =
+      createUserDto;
 
-    await queryRunner.connect();
-    await queryRunner.startTransaction();
-
-    try {
-      const { email, name, password, phone_number, profile_picture, role_ids } =
-        createUserDto;
-
-      const hashedPassword =
-        await this.encryptionService.hashPassword(password);
-
-      const user = queryRunner.manager.create(Users, {
-        name,
+    return this.dataSource.transaction(async (manager) => {
+      const savedUser = this.txInsertUser(manager, {
         email,
-        password: hashedPassword,
+        name,
+        password,
         phone_number,
         profile_picture,
+        role_ids,
       });
 
-      const savedUser = await queryRunner.manager.save(user);
-
-      const userRoles = role_ids.map((roleId) => ({
-        user_id: savedUser.id,
-        role_id: roleId,
-      }));
-
-      await queryRunner.manager.insert(UserRoles, userRoles);
-
-      await queryRunner.commitTransaction();
-
       return savedUser;
-    } catch (error) {
-      await queryRunner.rollbackTransaction();
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (error?.code === '23505') {
-        throw new BadRequestException(
-          'User with the same email or phone number already exists',
-        );
-      }
-
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-      if (error?.code === 'ER_DUP_ENTRY') {
-        throw new BadRequestException(
-          'User with the same email or phone number already exists',
-        );
-      }
-      throw error; // rethrow for global exception filter
-    } finally {
-      await queryRunner.release();
-    }
+    });
   }
 
   async getUser(id: string) {
