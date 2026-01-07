@@ -5,6 +5,7 @@ import {
   IsArray,
   ArrayNotEmpty,
   IsInt,
+  IsOptional,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -25,6 +26,7 @@ export class CreateUserDto {
   @MinLength(8)
   password: string;
 
+  @IsOptional()
   @IsString()
   profile_picture: string;
 

@@ -1,15 +1,19 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Storage } from '@google-cloud/storage';
 import { GCS_PROVIDER } from './gcs.provider';
+import { ConfigService } from '@nestjs/config';
+import { EnvSchema } from 'src/config/env.schema';
 
 @Injectable()
 export class GcsService {
-  private bucketName = process.env.GCS_BUCKET_NAME!;
-
-  constructor(@Inject(GCS_PROVIDER) private readonly storage: Storage) {}
+  constructor(
+    @Inject(GCS_PROVIDER) private readonly storage: Storage,
+    private configService: ConfigService<EnvSchema>,
+  ) {}
 
   private get bucket() {
-    return this.storage.bucket(this.bucketName);
+    const bucketName = this.configService.getOrThrow<string>('GCS_BUCKET_NAME');
+    return this.storage.bucket(bucketName);
   }
 
   async uploadFile(file: Express.Multer.File, folder = '') {

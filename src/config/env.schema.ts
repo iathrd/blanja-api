@@ -12,6 +12,9 @@ export const envSchema = z.object({
   BREVO_API_KEY: z.string(),
   BREVO_SENDER_EMAIL: z.string(),
   BREVO_SENDER_NAME: z.string(),
+  GCP_PROJECT_ID: z.string(),
+  GCS_BUCKET_NAME: z.string(),
+  GCP_KEY_FILE: z.string(),
   NODE_ENV: z
     .enum(['development', 'production', 'test'])
     .default('development'),

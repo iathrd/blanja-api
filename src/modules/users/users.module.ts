@@ -6,6 +6,7 @@ import { Users } from './entities/user.entity';
 import { EncryptionModule } from 'src/core/encryption/encryption.module';
 import { RolesModule } from '../roles/roles.module';
 import { BrevoModule } from 'src/core/brevo/brevo.module';
+import { GcsModule } from 'src/core/gcs/gcs.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { BrevoModule } from 'src/core/brevo/brevo.module';
     EncryptionModule,
     RolesModule,
     BrevoModule,
+    GcsModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],
