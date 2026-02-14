@@ -32,7 +32,10 @@ export class RolesService {
 
   async createRole(createRoleDto: RolesDto) {
     const role = new Roles();
-    role.description = createRoleDto.description;
+    if (createRoleDto.description !== undefined) {
+      role.description = createRoleDto.description;
+    }
+
     role.name = createRoleDto.name;
 
     await this.rolesRepository.save(role);
@@ -51,7 +54,10 @@ export class RolesService {
   async updateRole(id: number, updateRoleDto: RolesDto) {
     const role = await this.getRole(id);
 
-    role.description = updateRoleDto.description;
+    if (updateRoleDto.description !== undefined) {
+      role.description = updateRoleDto.description;
+    }
+
     role.name = updateRoleDto.name;
 
     await this.rolesRepository.save(role);
