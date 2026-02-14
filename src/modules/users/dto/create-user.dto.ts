@@ -11,33 +11,21 @@ import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateUserDto {
-  @ApiProperty({
-    example: 'Iqbal Ahmad',
-    minLength: 5,
-  })
+  @ApiProperty({ example: 'Iqbal Ahmad', minLength: 5 })
   @IsString()
   @MinLength(5)
   name: string;
 
-  @ApiProperty({
-    example: 'iqbal@email.com',
-  })
-  @IsString()
+  @ApiProperty({ example: 'iqbal@email.com' })
   @IsEmail()
   email: string;
 
-  @ApiProperty({
-    example: '081234567890',
-    minLength: 11,
-  })
+  @ApiProperty({ example: '081234567890', minLength: 11 })
   @IsString()
   @MinLength(11)
   phone_number: string;
 
-  @ApiProperty({
-    example: 'password123',
-    minLength: 8,
-  })
+  @ApiProperty({ example: 'password123', minLength: 8 })
   @IsString()
   @MinLength(8)
   password: string;
@@ -52,8 +40,8 @@ export class CreateUserDto {
 
   @ApiProperty({
     example: [1, 2],
-    type: [Number],
-    description: 'Array of role IDs',
+    type: 'array',
+    items: { type: 'number' },
   })
   @IsArray()
   @ArrayNotEmpty()
