@@ -25,7 +25,16 @@ async function bootstrap() {
     .setTitle('Blanja API')
     .setDescription('API documentation for Blanja application')
     .setVersion('1.0')
-    .addBearerAuth()
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Enter JWT token',
+      },
+      'access-token',
+    )
+
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
